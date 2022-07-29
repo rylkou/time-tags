@@ -1,0 +1,93 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: 'Tahoma', sans-serif;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+input, textarea {
+    font-family: inherit;
+    font-size: 16px;
+}
+
+#urlGroup {
+    display: flex;
+}
+
+#txtVideoURL {
+    flex: 1;
+}
+
+#error {
+    display: none;
+    color: brown;
+    text-align: center;
+}
+
+#editor {
+    display: none;
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+#btnNewTag , #btnExport {
+    width: 50%;
+}
+
+.row {
+    display: flex;
+}
+
+input[type="radio"] {
+    margin-top: 0;
+}
+
+.txtDescription {
+    flex: 1;
+}
+
+.time {
+    color: blue;
+    text-decoration: none;
+    margin-right: 4px;
+    min-width: 60px;
+    text-align: right;
+}
+
+.txtDescription {
+    border: none;
+    outline: none;
+}
+
+#export {
+    display: none;
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+#btnGroup input {
+    width: 20%;
+}
+
+#btnEditor {
+    width: 100%;
+}
+
+#txtExport {
+    flex-grow: 1;
+    width: 100%;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+}
+
+#rows {
+    overflow-y: scroll;
+    flex-grow: 1;
+    height: 0;
+}

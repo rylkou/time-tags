@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Time tags 4 YouTube</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="urlGroup">
+            <input type="text"
+                   id="txtVideoURL"
+                   placeholder="Paste YouTube video URL link here...">
+            <input type="button" value="Open Video" id="btnOpen">
+        </div>
+        <div id="error">Check URL format</div>
+        <div id="player"></div>
+        <div id="editor">
+            <div>
+                <input type="button"
+                       name="btnNewTag"
+                       value="Add New Tag"
+                       id="btnNewTag"
+                       ><input type="button"
+                       name="btnExport"
+                       value="Source Text Editor"
+                       id="btnExport">
+            </div>
+            <div id="rows">
+            </div>
+            <div id="btnGroup">
+                <input type="button" value="<<" id="btnLeft5"
+                       ><input type="button" value="&nbsp;<&nbsp;" id="btnLeft"
+                       ><input type="button" value="&nbsp;>&nbsp;" id="btnRight"
+                       ><input type="button" value=">>" id="btnRight5"
+                       ><input type="button" value="X" id="btnDel">
+            </div>
+        </div>
+        <div id="export">
+            <input type="button"
+                   value="Visual Editor"
+                   id="btnEditor"
+                   >
+            <textarea id="txtExport" spellcheck="true"></textarea>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>
