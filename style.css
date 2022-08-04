@@ -10,9 +10,11 @@ body {
     flex-direction: column;
 }
 
-input, textarea {
+input, textarea, a {
     font-family: inherit;
     font-size: 16px;
+    padding-top: 7px;
+    padding-bottom: 7px;
 }
 
 #urlGroup {
@@ -29,13 +31,19 @@ input, textarea {
     text-align: center;
 }
 
-#editor {
+#tabVisualEditor {
     display: none;
     flex-grow: 1;
     flex-direction: column;
 }
 
-#btnNewTag , #btnExport {
+#tabTxtEditor {
+    display: none;
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+#btnNewTag , #btnTxtEditor {
     width: 50%;
 }
 
@@ -64,21 +72,15 @@ input[type="radio"] {
     outline: none;
 }
 
-#export {
-    display: none;
-    flex-grow: 1;
-    flex-direction: column;
-}
-
 #btnGroup input {
     width: 20%;
 }
 
-#btnEditor {
+#btnVisualEditor {
     width: 100%;
 }
 
-#txtExport {
+#txtEditor {
     flex-grow: 1;
     width: 100%;
     border: none;
@@ -90,4 +92,5 @@ input[type="radio"] {
     overflow-y: scroll;
     flex-grow: 1;
     height: 0;
+    min-height: 99px;
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Time tags 4 YouTube</title>
+        <title>YouTube TimeTags Mobile</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
@@ -15,16 +15,16 @@
         </div>
         <div id="error">Check URL format</div>
         <div id="player"></div>
-        <div id="editor">
+        <div id="tabVisualEditor">
             <div>
                 <input type="button"
                        name="btnNewTag"
                        value="Add New Tag"
                        id="btnNewTag"
                        ><input type="button"
-                       name="btnExport"
-                       value="Source Text Editor"
-                       id="btnExport">
+                       name="btnTxtEditor"
+                       value="Switch to Text Editor"
+                       id="btnTxtEditor">
             </div>
             <div id="rows">
             </div>
@@ -36,12 +36,11 @@
                        ><input type="button" value="X" id="btnDel">
             </div>
         </div>
-        <div id="export">
+        <div id="tabTxtEditor">
             <input type="button"
-                   value="Visual Editor"
-                   id="btnEditor"
-                   >
-            <textarea id="txtExport" spellcheck="true"></textarea>
+                   value="Switch to Visual Editor"
+                   id="btnVisualEditor">
+            <textarea id="txtEditor" spellcheck="true"></textarea>
         </div>
         <script src="script.js"></script>
     </body>

@@ -27,12 +27,12 @@ document.getElementById("btnOpen").onclick = function () {
         errorDiv.style.display = "none";
         let urlDiv = document.getElementById("urlGroup");
         urlDiv.style.display = "none";
-        let exportDiv = document.getElementById("export");
+        let exportDiv = document.getElementById("tabTxtEditor");
         exportDiv.style.display = "flex";
 
         localStorage.setItem('videoId', videoId);
         let source = localStorage.getItem('timeTags');
-        let exportTxt = document.getElementById("txtExport");
+        let exportTxt = document.getElementById("txtEditor");
         exportTxt.value = source;
 
         createPlayer(videoId);
@@ -41,11 +41,15 @@ document.getElementById("btnOpen").onclick = function () {
 
 document.getElementById("btnNewTag").onclick = function () {
     addNewTag();
+    saveFromVisualEditor();
 };
 
 function addNewTag(seconds, description) {
+    let checked = false;
+
     if (seconds === undefined) {
         seconds = Math.floor(player.getCurrentTime());
+        checked = true;
     }
 
     let referenceRow = getReferenceRow(seconds);
@@ -61,7 +65,9 @@ function addNewTag(seconds, description) {
     radio.name = "selectedRow";
     radio.type = "radio";
     radio.id = "radio" + id;
+    radio.checked = checked;
     row.appendChild(radio);
+    radio.focus();
 
     let hms = formatTime(seconds);
     let a = document.createElement("a");
@@ -71,7 +77,7 @@ function addNewTag(seconds, description) {
     a.href = "";
     a.onclick = function () {
         player.seekTo(seconds);
-        radio.checked = "true";
+        radio.checked = true;
         return false;
     };
     row.appendChild(a);
@@ -85,23 +91,29 @@ function addNewTag(seconds, description) {
     if (description !== undefined) {
         inputDescription.value = description;
     }
+    inputDescription.onfocus = function () {
+        radio.checked = true;
+    };
+    inputDescription.onblur = function () {
+        saveFromVisualEditor();
+    };
     row.appendChild(inputDescription);
 }
 
 document.getElementById("btnDel").onclick = function () {
-    let rows = document.getElementsByClassName("row");
-    Array.prototype.forEach.call(rows, function (row) {
+
+    let radio = document.querySelector('input[name="selectedRow"]:checked');
+
+    if (radio !== null) {
+        let row = radio.parentElement;
         let id = row.id;
-        let radio = document.getElementById("radio" + id);
-        if (radio.checked) {
-            let hms = document.getElementById("time" + id).innerHTML;
-            let txt = document.getElementById("txt" + id).value;
-            if (confirm('Remove ' + hms + " " + txt)) {
-                row.remove();
-                return;
-            }
+        let hms = document.getElementById("time" + id).innerHTML;
+        let txt = document.getElementById("txt" + id).value;
+        if (confirm('Remove ' + hms + " " + txt)) {
+            row.remove();
+            saveFromVisualEditor();
         }
-    });
+    }
 };
 
 document.getElementById("btnLeft5").onclick = function() {seek(-5);};
@@ -110,43 +122,73 @@ document.getElementById("btnRight").onclick = function() {seek(1);};
 document.getElementById("btnRight5").onclick = function() {seek(5);};
 
 function seek(dseconds) {
-    let rows = document.getElementsByClassName("row");
-    Array.prototype.forEach.call(rows, function (row) {
-        let id = row.id;
-        let radio = document.getElementById("radio" + id);
-        if (radio.checked) {
-            let seconds = row.dataset.seconds;
-            let newSeconds = parseInt(seconds) + dseconds;
-            if (newSeconds < 0) {
-                newSeconds = 0;
-            }
-            if (newSeconds > player.getDuration()) {
-                newSeconds = player.getDuration();
-            }
-            row.dataset.seconds = newSeconds;
-            let hms = formatTime(newSeconds);
-            let a = document.getElementById("time" + id);
-            a.innerHTML = hms;
-            a.onclick = function () {
-                player.seekTo(newSeconds);
-                radio.checked = "true";
-                return false;
-            };
-            player.seekTo(newSeconds);
-            return;
+
+    let radio = document.querySelector('input[name="selectedRow"]:checked');
+
+    if (radio !== null) {
+        let row = radio.parentElement;
+        let seconds = parseInt(row.dataset.seconds);
+        let newSeconds = seconds + dseconds;
+        if (newSeconds < 0) {
+            newSeconds = 0;
         }
-    });
+        if (newSeconds > player.getDuration()) {
+            newSeconds = player.getDuration();
+        }
+        row.dataset.seconds = newSeconds;
+        let hms = formatTime(newSeconds);
+        let a = document.getElementById("time" + row.id);
+        a.innerHTML = hms;
+        a.onclick = function () {
+            player.seekTo(newSeconds);
+            radio.checked = true;
+            return false;
+        };
+        player.seekTo(newSeconds);
+        checkRowsOrder(row);
+        saveFromVisualEditor();
+    }
 }
 
-document.getElementById("btnExport").onclick = function () {
+function checkRowsOrder(row) {
+
+    let seconds = parseInt(row.dataset.seconds);
+    let nextRow = row.nextSibling;
+    let previousRow = row.previousSibling;
+    let referenceRow = getReferenceRow(seconds);
+    let rows = document.getElementById("rows");
+
+    if (nextRow !== null) {
+        let nextSeconds = parseInt(nextRow.dataset.seconds);
+        if (nextSeconds < seconds) {
+            row.remove();
+            rows.insertBefore(row, referenceRow);
+            return;
+        }
+    }
+
+    if (previousRow !== null) {
+        let previousSeconds = parseInt(previousRow.dataset.seconds);
+        if (previousSeconds > seconds) {
+            row.remove();
+            rows.insertBefore(row, referenceRow);
+        }
+    }
+}
+
+function saveFromVisualEditor() {
     let result = getSourceFromVisualEditor();
     localStorage.setItem('timeTags', result);
+    return result;
+}
 
-    let exportDiv = document.getElementById("export");
-    let exportTxt = document.getElementById("txtExport");
+document.getElementById("btnTxtEditor").onclick = function () {
+    let result = saveFromVisualEditor();
+    let exportDiv = document.getElementById("tabTxtEditor");
+    let exportTxt = document.getElementById("txtEditor");
     exportTxt.value = result;
     exportDiv.style.display = "flex";
-    let editorDiv = document.getElementById("editor");
+    let editorDiv = document.getElementById("tabVisualEditor");
     editorDiv.style.display = "none";
 
 };
@@ -164,16 +206,16 @@ function getSourceFromVisualEditor() {
     return result;
 }
 
-document.getElementById("btnEditor").onclick = function () {
-    let exportDiv = document.getElementById("export");
+document.getElementById("btnVisualEditor").onclick = function () {
+    let exportDiv = document.getElementById("tabTxtEditor");
     exportDiv.style.display = "none";
-    let editorDiv = document.getElementById("editor");
+    let editorDiv = document.getElementById("tabVisualEditor");
     editorDiv.style.display = "flex";
 
-    clearTimeTagsEditor();
+    clearVisualEditor();
 
     // TODO support multirow description
-    let exportTxt = document.getElementById("txtExport");
+    let exportTxt = document.getElementById("txtEditor");
     source = exportTxt.value;
     let strings = source.split("\n");
     for (let i = 0; i < strings.length; i++) {
@@ -187,7 +229,7 @@ document.getElementById("btnEditor").onclick = function () {
     }
 };
 
-function clearTimeTagsEditor() {
+function clearVisualEditor() {
     let rows = document.getElementById("rows");
     while (rows.firstChild) {
         rows.removeChild(rows.firstChild);
@@ -199,8 +241,11 @@ function getReferenceRow(seconds) {
     let rows = document.getElementsByClassName("row");
     let reference = null;
     Array.prototype.forEach.call(rows, function (row) {
-        if (seconds < row.dataset.seconds) {
-            if (reference === null || reference.dataset.seconds < seconds) {
+        let secondsI = parseInt(row.dataset.seconds);
+        if (seconds < secondsI) {
+            if (reference === null
+                    || (parseInt(reference.dataset.seconds) < seconds
+                    && secondsI !== parseInt(reference.dataset.seconds))) {
                 reference = row;
             }
         }
@@ -226,7 +271,6 @@ function createPlayer(id) {
 
 // The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-    //event.target.playVideo();
 }
 
 function getVideoIDFromURL(url) {
@@ -265,3 +309,9 @@ function hmsToSecondsOnly(str) {
 
     return s;
 }
+
+window.onbeforeunload = function() {
+    if (!confirm('Exit?')) {
+        return false;
+    }
+};
