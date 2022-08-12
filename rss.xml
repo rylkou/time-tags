@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+   <channel>
+      <title>RSS feed with the images and texts</title>
+      <link>https://rylkou.github.io/yt/</link>
+      <description>The RSS feed for Placid and Zapier to pull the info an make the automated images.</description>
+      <atom:link href="https://rylkou.github.io/yt/rss.xml" rel="self" type="application/rss+xml" />
+   </channel>
+</rss>

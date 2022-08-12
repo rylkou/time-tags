@@ -1,6 +1,37 @@
 let player;
 let videoId;
 let id = 0;
+let REMOVE = 'Remove';
+let REMOVE_ALERT = 'Select Tag using Radio Button before remove it';
+let MOVE_ALERT = 'Select Tag using Radio Button before move it';
+let TAG_PLACEHOLDER = 'Paste Tag Description here...';
+
+function translate() {
+    if (navigator.language.startsWith('ru')) {
+        document.getElementById("txtVideoURL").placeholder = "Вставьте здесь URL-ссылку на YouTube видео...";
+        document.getElementById("btnOpen").value = "Открыть видео";
+        document.getElementById("error").innerHTML = "Проверьте формат URL-ссылки";
+        document.getElementById("btnVisualEditor").value = "Переключить в визуальный редактор";
+        document.getElementById("btnTxtEditor").value = "В текстовый редактор";
+        document.getElementById("btnNewTag").value = "Добавить новую метку";
+        REMOVE = 'Удалить';
+        REMOVE_ALERT = 'Перед удалением метки выделите её с помощью радиокнопки';
+        MOVE_ALERT = 'Перед перемещением метки выделите её с помощью радиокнопки';
+        TAG_PLACEHOLDER = 'Вставьте описание метки здесь...';
+    }
+    if (navigator.language.startsWith('be')) {
+        document.getElementById("txtVideoURL").placeholder = "Устаўце тут URL-спасылку на YouTube відэа...";
+        document.getElementById("btnOpen").value = "Адкрыць відэа";
+        document.getElementById("error").innerHTML = "Праверце фармат URL-спасылкі";
+        document.getElementById("btnVisualEditor").value = "Пераключыць у візуальны рэдактар";
+        document.getElementById("btnTxtEditor").value = "У тэкставы рэдактар";
+        document.getElementById("btnNewTag").value = "Дадаць новую пазнаку";
+        REMOVE = 'Выдаліць';
+        REMOVE_ALERT = 'Перад выдаленнем пазнакі вылучыце яе з дапамогай радыёкнопкі';
+        MOVE_ALERT = 'Перад перамяшчэннем пазнакі вылучыце яе з дапамогай радыёкнопкі';
+        TAG_PLACEHOLDER = 'Устаўце апісанне пазнакі тут...';
+    }
+}
 
 document.addEventListener("DOMContentLoaded", function (event) {
     videoId = localStorage.getItem('videoId');
@@ -8,6 +39,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
         document.getElementById("txtVideoURL").value = 'https://youtu.be/' +
                 videoId;
     }
+
+    translate();
 });
 
 // This code loads the IFrame Player API code asynchronously.
@@ -87,7 +120,7 @@ function addNewTag(seconds, description) {
     inputDescription.spellcheck = "true";
     inputDescription.type = "text";
     inputDescription.id = "txt" + id;
-    inputDescription.placeholder = "Paste Tag Description here...";
+    inputDescription.placeholder = TAG_PLACEHOLDER;
     if (description !== undefined) {
         inputDescription.value = description;
     }
@@ -109,9 +142,16 @@ document.getElementById("btnDel").onclick = function () {
         let id = row.id;
         let hms = document.getElementById("time" + id).innerHTML;
         let txt = document.getElementById("txt" + id).value;
-        if (confirm('Remove ' + hms + " " + txt)) {
+        if (confirm(REMOVE + ' ' + hms + " " + txt)) {
             row.remove();
             saveFromVisualEditor();
+        }
+    }
+    else {
+        let removeAlerted = localStorage.getItem('removeAlerted');
+        if (removeAlerted === null) {
+            localStorage.setItem('removeAlerted', true);
+            alert(REMOVE_ALERT);
         }
     }
 };
@@ -147,6 +187,14 @@ function seek(dseconds) {
         player.seekTo(newSeconds);
         checkRowsOrder(row);
         saveFromVisualEditor();
+    }
+
+    else {
+        let moveAlerted = localStorage.getItem('moveAlerted');
+        if (moveAlerted === null) {
+            localStorage.setItem('moveAlerted', true);
+            alert(MOVE_ALERT);
+        }
     }
 }
 
@@ -214,18 +262,30 @@ document.getElementById("btnVisualEditor").onclick = function () {
 
     clearVisualEditor();
 
-    // TODO support multirow description
     let exportTxt = document.getElementById("txtEditor");
     source = exportTxt.value;
     let strings = source.split("\n");
+    let seconds = -1;
+    let description = "";
     for (let i = 0; i < strings.length; i++) {
         let timeTag = strings[i].trim();
         let hms = timeTag.split(" ")[0];
         if (hms !== "") {
-            let seconds = hmsToSecondsOnly(hms);
-            let description = timeTag.substring(hms.length).trim();
-            addNewTag(seconds, description);
+            let secondsOrDescription = hmsToSecondsOnly(hms);
+            if (isNaN(secondsOrDescription)) {
+                description = description + " " + timeTag;
+            }
+            else {
+                if (seconds !== -1) {
+                    addNewTag(seconds, description);
+                }
+                seconds = secondsOrDescription;
+                description = timeTag.substring(hms.length).trim();
+            }
         }
+    }
+    if (seconds !== -1) {
+        addNewTag(seconds, description);
     }
 };
 
@@ -299,6 +359,10 @@ function formatTime(totalSeconds) {
 }
 
 function hmsToSecondsOnly(str) {
+    if (str.indexOf(':') === -1) {
+        return Number.NaN;
+    }
+
     let p = str.split(':'),
         s = 0, m = 1;
 
