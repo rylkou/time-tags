@@ -1,26 +1,25 @@
 <?xml version="1.0"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
    <channel>
       <title>RSS feed with the images and texts</title>
       <link>https://rylkou.github.io/yt</link>
       <description>The RSS feed for Placid and Zapier to pull the info an make the automated images.</description>
-      <atom:link href="https://rylkou.github.io/yt/rss.xml" rel="self" type="application/rss+xml" />
-      <item>
-        <title>Unnamed</title>
-        <description>Sky watchers in Europe, Asia, and parts of Alaska and Canada will experience a &lt;a href="http://science.nasa.gov/headlines/y2003/30may_solareclipse.htm"&gt;partial eclipse of the Sun&lt;/a&gt; on Saturday, May 31st.</description>
-        <pubDate>Fri, 12 Aug 2022 20:39:36 GMT</pubDate>
-        <media:thumbnail url="https://rylkou.github.io/yt/img/20.png" />
-      </item>
       <item>
         <title>Astronauts' Dirty Laundry</title>
         <description>Compared to earlier spacecraft, the International Space Station has many luxuries, but laundry facilities are not one of them. Instead, astronauts have other options.</description>
-        <pubDate>Fri, 12 Aug 2022 20:35:59 GMT</pubDate>
-        <media:thumbnail url="https://rylkou.github.io/yt/img/19.png" />
+        <pubDate>Fri, 12 Aug 2022 22:01:22 GMT</pubDate>
+        <media:thumbnail url="https://rylkou.github.io/yt/img/20.png" />
       </item>
       <item>
         <title>Star City</title>
         <description>How do Americans get ready to work with Russians aboard the International Space Station? They take a crash course in culture, language and protocol at Russia's &lt;a href="http://howe.iki.rssi.ru/GCTC/gctc_e.htm"&gt;Star City&lt;/a&gt;.</description>
-        <pubDate>Fri, 12 Aug 2022 20:31:31 GMT</pubDate>
+        <pubDate>Fri, 12 Aug 2022 21:49:56 GMT</pubDate>
+        <media:thumbnail url="https://rylkou.github.io/yt/img/19.png" />
+      </item>
+      <item>
+        <title>Unnamed</title>
+        <description>Sky watchers in Europe, Asia, and parts of Alaska and Canada will experience a &lt;a href="http://science.nasa.gov/headlines/y2003/30may_solareclipse.htm"&gt;partial eclipse of the Sun&lt;/a&gt; on Saturday, May 31st.</description>
+        <pubDate>Fri, 12 Aug 2022 20:39:36 GMT</pubDate>
         <media:thumbnail url="https://rylkou.github.io/yt/img/18.png" />
       </item>
    </channel>
