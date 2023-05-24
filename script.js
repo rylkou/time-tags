@@ -345,9 +345,9 @@ function onPlayerReady(event) {
 }
 
 function getVideoIDFromURL(url) {
-    var regExp = /^.*((youtu.be\/)|(live\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    var regExp = /^.*((youtu.be\/)|(live\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))(\?v=)?([^#&?]*).*/;
     var match = url.match(regExp);
-    return (match && match[8].length === 11) ? match[8] : false;
+    return (match && match[9].length === 11) ? match[9] : false;
 }
 
 function formatTime(totalSeconds) {
