@@ -43,10 +43,15 @@ input, textarea, a {
     flex-direction: column;
 }
 
-#btnNewTag , #btnTxtEditor {
-    width: 50%;
+#btnNewTag {
+    width: 37%;
 }
-
+#btnPlaybackSpeed {
+    width: 14%;
+}
+#btnTxtEditor {
+    width: 49%;
+}
 .row {
     display: flex;
 }
@@ -72,7 +77,11 @@ input[type="radio"] {
     outline: none;
 }
 
-#btnGroup input {
+#btnMoveGroup {
+    display: none;
+}
+
+#btnMoveGroup input {
     width: 20%;
 }
 

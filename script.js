@@ -8,30 +8,36 @@ let TAG_PLACEHOLDER = 'Paste Tag Description here...';
 
 function translate() {
     if (navigator.language.startsWith('ru')) {
-        document.getElementById("txtVideoURL").placeholder = "Вставьте здесь URL-ссылку на YouTube видео...";
+        document.getElementById("txtVideoURL").placeholder = "Вставьте URL-ссылку на YouTube видео...";
         document.getElementById("btnOpen").value = "Открыть видео";
         document.getElementById("error").innerHTML = "Проверьте формат URL-ссылки";
         document.getElementById("btnVisualEditor").value = "Переключить в визуальный редактор";
         document.getElementById("btnTxtEditor").value = "В текстовый редактор";
-        document.getElementById("btnNewTag").value = "Добавить новую метку";
+        document.getElementById("btnNewTag").value = "Добавить метку";
         REMOVE = 'Удалить';
         REMOVE_ALERT = 'Перед удалением метки выделите её с помощью радиокнопки';
         MOVE_ALERT = 'Перед перемещением метки выделите её с помощью радиокнопки';
         TAG_PLACEHOLDER = 'Вставьте описание метки здесь...';
     }
     if (navigator.language.startsWith('be')) {
-        document.getElementById("txtVideoURL").placeholder = "Устаўце тут URL-спасылку на YouTube відэа...";
+        document.getElementById("txtVideoURL").placeholder = "Устаўце URL-спасылку на YouTube відэа...";
         document.getElementById("btnOpen").value = "Адкрыць відэа";
         document.getElementById("error").innerHTML = "Праверце фармат URL-спасылкі";
         document.getElementById("btnVisualEditor").value = "Пераключыць у візуальны рэдактар";
         document.getElementById("btnTxtEditor").value = "У тэкставы рэдактар";
-        document.getElementById("btnNewTag").value = "Дадаць новую пазнаку";
+        document.getElementById("btnNewTag").value = "Дадаць метку";
         REMOVE = 'Выдаліць';
-        REMOVE_ALERT = 'Перад выдаленнем пазнакі вылучыце яе з дапамогай радыёкнопкі';
-        MOVE_ALERT = 'Перад перамяшчэннем пазнакі вылучыце яе з дапамогай радыёкнопкі';
-        TAG_PLACEHOLDER = 'Устаўце апісанне пазнакі тут...';
+        REMOVE_ALERT = 'Перад выдаленнем меткi вылучыце яе з дапамогай радыёкнопкі';
+        MOVE_ALERT = 'Перад перамяшчэннем меткi вылучыце яе з дапамогай радыёкнопкі';
+        TAG_PLACEHOLDER = 'Устаўце апісанне меткі тут...';
     }
 }
+
+// This code loads the IFrame Player API code asynchronously.
+let tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+let firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 document.addEventListener("DOMContentLoaded", function (event) {
     videoId = localStorage.getItem('videoId');
@@ -42,12 +48,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     translate();
 });
-
-// This code loads the IFrame Player API code asynchronously.
-let tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-let firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 // get URL from input field and open player
 document.getElementById("btnOpen").onclick = function () {
@@ -77,6 +77,14 @@ document.getElementById("btnNewTag").onclick = function () {
     saveFromVisualEditor();
 };
 
+function btnMoveGroupShow() {
+    document.getElementById("btnMoveGroup").style.display = "block";
+}
+
+function btnMoveGroupHide() {
+    document.getElementById("btnMoveGroup").style.display = "none";
+}
+
 function addNewTag(seconds, description) {
     let checked = false;
 
@@ -99,8 +107,10 @@ function addNewTag(seconds, description) {
     radio.type = "radio";
     radio.id = "radio" + id;
     radio.checked = checked;
+    radio.onclick = function () {
+        btnMoveGroupShow();
+    };
     row.appendChild(radio);
-    radio.focus();
 
     let hms = formatTime(seconds);
     let a = document.createElement("a");
@@ -111,6 +121,7 @@ function addNewTag(seconds, description) {
     a.onclick = function () {
         player.seekTo(seconds);
         radio.checked = true;
+        btnMoveGroupShow();
         return false;
     };
     row.appendChild(a);
@@ -126,34 +137,30 @@ function addNewTag(seconds, description) {
     }
     inputDescription.onfocus = function () {
         radio.checked = true;
+        btnMoveGroupShow();
     };
     inputDescription.onblur = function () {
         saveFromVisualEditor();
     };
     row.appendChild(inputDescription);
+    if (checked) {
+        inputDescription.focus();
+    }
 }
 
 document.getElementById("btnDel").onclick = function () {
 
     let radio = document.querySelector('input[name="selectedRow"]:checked');
+    let row = radio.parentElement;
+    let id = row.id;
+    let hms = document.getElementById("time" + id).innerHTML;
+    let txt = document.getElementById("txt" + id).value;
+    if (confirm(REMOVE + ' ' + hms + " " + txt)) {
+        row.remove();
+        saveFromVisualEditor();
+        btnMoveGroupHide();
+    }
 
-    if (radio !== null) {
-        let row = radio.parentElement;
-        let id = row.id;
-        let hms = document.getElementById("time" + id).innerHTML;
-        let txt = document.getElementById("txt" + id).value;
-        if (confirm(REMOVE + ' ' + hms + " " + txt)) {
-            row.remove();
-            saveFromVisualEditor();
-        }
-    }
-    else {
-        let removeAlerted = localStorage.getItem('removeAlerted');
-        if (removeAlerted === null) {
-            localStorage.setItem('removeAlerted', true);
-            alert(REMOVE_ALERT);
-        }
-    }
 };
 
 document.getElementById("btnLeft5").onclick = function() {seek(-5);};
@@ -164,38 +171,28 @@ document.getElementById("btnRight5").onclick = function() {seek(5);};
 function seek(dseconds) {
 
     let radio = document.querySelector('input[name="selectedRow"]:checked');
-
-    if (radio !== null) {
-        let row = radio.parentElement;
-        let seconds = parseInt(row.dataset.seconds);
-        let newSeconds = seconds + dseconds;
-        if (newSeconds < 0) {
-            newSeconds = 0;
-        }
-        if (newSeconds > player.getDuration()) {
-            newSeconds = player.getDuration();
-        }
-        row.dataset.seconds = newSeconds;
-        let hms = formatTime(newSeconds);
-        let a = document.getElementById("time" + row.id);
-        a.innerHTML = hms;
-        a.onclick = function () {
-            player.seekTo(newSeconds);
-            radio.checked = true;
-            return false;
-        };
+    let row = radio.parentElement;
+    let seconds = parseInt(row.dataset.seconds);
+    let newSeconds = seconds + dseconds;
+    if (newSeconds < 0) {
+        newSeconds = 0;
+    }
+    if (newSeconds > player.getDuration()) {
+        newSeconds = player.getDuration();
+    }
+    row.dataset.seconds = newSeconds;
+    let hms = formatTime(newSeconds);
+    let a = document.getElementById("time" + row.id);
+    a.innerHTML = hms;
+    a.onclick = function () {
         player.seekTo(newSeconds);
-        checkRowsOrder(row);
-        saveFromVisualEditor();
-    }
+        radio.checked = true;
+        return false;
+    };
+    player.seekTo(newSeconds);
+    checkRowsOrder(row);
+    saveFromVisualEditor();
 
-    else {
-        let moveAlerted = localStorage.getItem('moveAlerted');
-        if (moveAlerted === null) {
-            localStorage.setItem('moveAlerted', true);
-            alert(MOVE_ALERT);
-        }
-    }
 }
 
 function checkRowsOrder(row) {
@@ -230,6 +227,19 @@ function saveFromVisualEditor() {
     return result;
 }
 
+document.getElementById("btnPlaybackSpeed").onclick = function () {
+    let speed = +this.value.slice(0, -1);
+    if (speed === 2) {
+        speed = 1;
+    }
+    else {
+        speed = 2;
+    }
+    this.value = speed + "x";
+    player.setPlaybackRate(speed);
+
+};
+
 document.getElementById("btnTxtEditor").onclick = function () {
     let result = saveFromVisualEditor();
     let exportDiv = document.getElementById("tabTxtEditor");
@@ -238,6 +248,7 @@ document.getElementById("btnTxtEditor").onclick = function () {
     exportDiv.style.display = "flex";
     let editorDiv = document.getElementById("tabVisualEditor");
     editorDiv.style.display = "none";
+    btnMoveGroupHide();
 
 };
 
@@ -334,9 +345,9 @@ function onPlayerReady(event) {
 }
 
 function getVideoIDFromURL(url) {
-    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    var regExp = /^.*((youtu.be\/)|(live\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
     var match = url.match(regExp);
-    return (match && match[7].length === 11) ? match[7] : false;
+    return (match && match[8].length === 11) ? match[8] : false;
 }
 
 function formatTime(totalSeconds) {
